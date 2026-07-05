@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 import joblib
+import json
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -99,3 +100,13 @@ print(f"R²: {r2:.3f}")
 # Save the trained model
 joblib.dump(best_model, "model.pkl")
 print("🎉 Model saved as model.pkl")
+
+# Save metrics so app.py can serve them dynamically
+metrics = {
+    "r2": round(float(r2), 4),
+    "rmse": round(float(rmse), 2),
+    "mae": round(float(mae), 2)
+}
+with open("model_metrics.json", "w") as f:
+    json.dump(metrics, f)
+print(f"📊 Metrics saved: R²={metrics['r2']}, RMSE={metrics['rmse']}, MAE={metrics['mae']}")

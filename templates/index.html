@@ -2,68 +2,281 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Electricity Cost Prediction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Cost Predictor | Analytics</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+        :root {
+            --primary: #0a2540;
+            --secondary: #635bff;
+            --accent: #00d4ff;
+            --background: #f6f9fc;
+            --surface: #ffffff;
+            --text-main: #32325d;
+            --text-muted: #525f7f;
+            --border: #e6ebf1;
+            --error: #e53935;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f6f9fc 0%, #eef1f6 100%);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
         .container {
-            width: 400px; margin: 50px auto; padding: 20px;
-            background: white; border-radius: 10px; box-shadow: 0 0 10px gray;
+            background: var(--surface);
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
         }
-        h2 { text-align: center; color: #333; }
-        form { display: flex; flex-direction: column; }
-        label { margin: 10px 0 5px; }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0 0 10px 0;
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .metrics-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .metric {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .metric-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .metric-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         input, select {
-            padding: 8px; border-radius: 5px; border: 1px solid #ccc;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background-color: #fbfbfc;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            width: 100%;
         }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
+        }
+
         button {
-            margin-top: 15px; padding: 10px;
-            background: #007bff; color: white; border: none;
-            border-radius: 5px; cursor: pointer;
+            grid-column: span 2;
+            margin-top: 10px;
+            padding: 14px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
         }
-        button:hover { background: #0056b3; }
-        .result { margin-top: 20px; font-weight: bold; text-align: center; }
+
+        button:hover {
+            background: #544ada;
+            transform: translateY(-1px);
+            box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            box-shadow: 0 3px 8px rgba(50, 50, 93, 0.1);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(99, 91, 255, 0.05);
+            border-left: 4px solid var(--secondary);
+            border-radius: 4px 8px 8px 4px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--primary);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result.error {
+            background: rgba(229, 57, 53, 0.05);
+            border-left: 4px solid var(--error);
+            color: var(--error);
+        }
+
+        .api-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+        }
+
+        .api-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 480px) {
+            form { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            button { grid-column: span 1; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Electricity Cost Prediction</h2>
+        <div class="header">
+            <h2>Electricity Cost Predictor</h2>
+            <p>Advanced machine learning analytics for cost estimation</p>
+        </div>
+
+        <div class="metrics-card">
+            <div class="metric">
+                <span class="metric-value">{{ metrics.r2 }}</span>
+                <span class="metric-label">Model R²</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value">{{ metrics.mae }}</span>
+                <span class="metric-label">MAE ($)</span>
+            </div>
+            <div class="metric">
+                <span class="metric-value">{{ metrics.rmse }}</span>
+                <span class="metric-label">RMSE ($)</span>
+            </div>
+        </div>
+
         <form action="/predict" method="post">
-            <label>Site Area:</label>
-            <input type="number" step="0.01" name="site_area" required>
+            <div class="form-group">
+                <label>Site Area</label>
+                <input type="number" step="0.01" name="site_area" required placeholder="sq. meters">
+            </div>
 
-            <label>Structure Type:</label>
-            <select name="structure_type" required>
-                <option value="Mixed-use">Mixed-use</option>
-                <option value="Residential">Residential</option>
-                <option value="Commercial">Commercial</option>
-            </select>
+            <div class="form-group">
+                <label>Structure Type</label>
+                <select name="structure_type" required>
+                    <option value="Mixed-use">Mixed-use</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
 
-            <label>Water Consumption:</label>
-            <input type="number" step="0.01" name="water_consumption" required>
+            <div class="form-group">
+                <label>Water Consumption</label>
+                <input type="number" step="0.01" name="water_consumption" required placeholder="Liters">
+            </div>
 
-            <label>Recycling Rate:</label>
-            <input type="number" step="0.01" name="recycling_rate" required>
+            <div class="form-group">
+                <label>Recycling Rate</label>
+                <input type="number" step="0.01" name="recycling_rate" required placeholder="Percentage">
+            </div>
 
-            <label>Utilisation Rate:</label>
-            <input type="number" step="0.01" name="utilisation_rate" required>
+            <div class="form-group">
+                <label>Utilization Rate</label>
+                <input type="number" step="0.01" name="utilization_rate" required placeholder="Ratio">
+            </div>
 
-            <label>Air Qality Index:</label>
-            <input type="number" step="0.01" name="air_qality_index" required>
+            <div class="form-group">
+                <label>Air Quality Index</label>
+                <input type="number" step="0.01" name="air_quality_index" required placeholder="AQI">
+            </div>
 
-            <label>Issue Reolution Time:</label>
-            <input type="number" step="0.01" name="issue_reolution_time" required>
+            <div class="form-group">
+                <label>Issue Resolution Time</label>
+                <input type="number" step="0.01" name="issue_resolution_time" required placeholder="Hours">
+            </div>
 
-            <label>Resident Count:</label>
-            <input type="number" step="1" name="resident_count" required>
+            <div class="form-group">
+                <label>Resident Count</label>
+                <input type="number" step="1" name="resident_count" required placeholder="Total residents">
+            </div>
 
-            <button type="submit">Predict</button>
+            <button type="submit">Calculate Prediction</button>
         </form>
 
         {% if prediction %}
-        <div class="result">
+        <div class="result {% if error %}error{% endif %}">
             {{ prediction }}
         </div>
         {% endif %}
+
+        <a href="/docs" class="api-link" target="_blank">View OpenAPI Interactive Documentation (Swagger UI) &rarr;</a>
     </div>
 </body>
 </html>
