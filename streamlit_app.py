@@ -708,7 +708,6 @@ with tab3:
             "Mixed-use":   "#34d399",
         },
         opacity=0.6,
-        trendline="ols",
         labels={col_key: selected_feature, "electricity cost": "Electricity Cost ($)"},
     )
     fig_feat.update_layout(**PLOTLY_THEME, height=360,
